@@ -37,14 +37,17 @@
     }
 </style>
 <script src="trie.js"></script>
-<script src="letterpress.js"></script>
+<script src="../letterpress-words.js"></script>
 <input id="input" autofocus autocapitalize=off>
 <ul id="output"></ul>
 <script>
+var dictionary = new Trie;
+getLetterpressWords(function(word){ dictionary.insert(word); });
+
 input.addEventListener('input', function() {
     output.innerHTML = '';
     if (input.value.length > 1) {
-        letterpress.permutations(input.value.toLowerCase()).forEach(function(word) {
+        dictionary.permutations(input.value.toLowerCase()).forEach(function(word) {
             var li = document.createElement('li');
             li.appendChild(document.createTextNode(word));
             output.appendChild(li);
