@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="viewport" content="width=device-width">
+<style>
+    html {
+        font: 16px "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    body {
+        margin: 2em auto;
+        max-width: 40em;
+    }
+    #input {
+        font: inherit;
+        background: none;
+        border: none;
+        outline: none;
+        border-bottom: 1px solid black;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0.5em;
+        border-radius: 0;
+    }
+    #output {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    #output > li {
+        border-bottom: 1px solid #aaa;
+        padding: 0.5em;
+    }
+
+    @media only screen and (max-width: 640px) {
+        body {
+            margin: 0 auto;
+        }
+    }
+</style>
+<script src="../letterpress-words.js"></script>
+<form id="form">
+    <input id="input" autofocus autocapitalize=off>
+</form>
+<ul id="output"></ul>
+<script>
+function Word(word) {
+    var i, c;
+    this.word = word;
+    this.frequency = {};
+    for (i = word.length - 1; i >= 0; i--) {
+        c = word[i];
+        if (c in this.frequency) {
+            this.frequency[c]++;
+        } else {
+            this.frequency[c] = 1;
+        }
+    }
+}
+
+Word.prototype.contains = function(word) {
+    for (var c in word.frequency) {
+        if (!(this.frequency[c] >= word.frequency[c])) return false;
+    }
+    return true;
+}
+
+function byWordLength(a, b){
+    return (a.word.length < b.word.length) ? 1 : (a.word.length > b.word.length) ? -1 : 0;
+}
+
+var words = [];
+getLetterpressWords(function(word){ words.push(new Word(word)); });
+
+form.addEventListener('submit', function(e) {
+    var board;
+    e.preventDefault();
+    output.innerHTML = '';
+    if (input.value.length === 25) {
+        board = new Word(input.value);
+        words.filter(function(word){ return board.contains(word); }).sort(byWordLength).forEach(function(word) {
+            var li = document.createElement('li');
+            li.appendChild(document.createTextNode(word.word));
+            output.appendChild(li);
+        });
+    }
+}, false);
+</script>
